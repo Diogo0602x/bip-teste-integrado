@@ -136,4 +136,32 @@ describe('BeneficioFormDialogComponent', () => {
     c.onValorBlur();
     expect(c.valorDisplay).toContain('0,00');
   });
+
+  it('onValorKeydown impede entrada de letra', () => {
+    TestBed.configureTestingModule({
+      imports: [BeneficioFormDialogComponent, NoopAnimationsModule],
+      providers: [
+        { provide: MatDialogRef, useValue: { close } },
+        { provide: MAT_DIALOG_DATA, useValue: { mode: 'create' as const } }
+      ]
+    });
+    const c = TestBed.createComponent(BeneficioFormDialogComponent).componentInstance;
+    const event = { key: 'x', ctrlKey: false, metaKey: false, preventDefault: jest.fn() } as unknown as KeyboardEvent;
+    c.onValorKeydown(event);
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it('onValorKeydown permite dígito sem bloquear', () => {
+    TestBed.configureTestingModule({
+      imports: [BeneficioFormDialogComponent, NoopAnimationsModule],
+      providers: [
+        { provide: MatDialogRef, useValue: { close } },
+        { provide: MAT_DIALOG_DATA, useValue: { mode: 'create' as const } }
+      ]
+    });
+    const c = TestBed.createComponent(BeneficioFormDialogComponent).componentInstance;
+    const event = { key: '1', ctrlKey: false, metaKey: false, preventDefault: jest.fn() } as unknown as KeyboardEvent;
+    c.onValorKeydown(event);
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
 });

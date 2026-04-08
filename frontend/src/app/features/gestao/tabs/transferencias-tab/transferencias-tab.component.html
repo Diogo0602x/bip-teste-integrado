@@ -29,7 +29,11 @@
       <input
         class="form-control form-control-sm"
         type="text"
-        inputmode="decimal"
+        inputmode="numeric"
+        autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="done"
+        (keydown)="onTransferAmountKeydown($event)"
         [value]="transferAmountDisplay"
         (input)="onTransferAmountInput($any($event.target).value)"
         (blur)="onTransferAmountBlur()" />

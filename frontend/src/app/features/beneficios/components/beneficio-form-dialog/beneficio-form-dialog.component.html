@@ -14,7 +14,11 @@
       <input
         matInput
         type="text"
-        inputmode="decimal"
+        inputmode="numeric"
+        autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="done"
+        (keydown)="onValorKeydown($event)"
         [value]="valorDisplay"
         (input)="onValorInput($any($event.target).value)"
         (blur)="onValorBlur()">

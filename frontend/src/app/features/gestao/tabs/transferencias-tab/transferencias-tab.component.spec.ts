@@ -166,4 +166,16 @@ describe('TransferenciasTabComponent', () => {
     component.transferenciaForm.setValue({ fromId: 1, toId: 1, amount: 1 });
     expect(component.transferenciaForm.getRawValue().toId).toBe(0);
   });
+
+  it('onTransferAmountKeydown impede entrada de letra', () => {
+    const event = { key: 'q', ctrlKey: false, metaKey: false, preventDefault: jest.fn() } as unknown as KeyboardEvent;
+    component.onTransferAmountKeydown(event);
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it('onTransferAmountKeydown permite dígito sem bloquear', () => {
+    const event = { key: '7', ctrlKey: false, metaKey: false, preventDefault: jest.fn() } as unknown as KeyboardEvent;
+    component.onTransferAmountKeydown(event);
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
 });

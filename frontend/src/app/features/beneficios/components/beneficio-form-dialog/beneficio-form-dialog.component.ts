@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { Beneficio, BeneficioPayload } from '../../../../core/models/beneficio.model';
+import { isAllowedNumericInputKey, parseCurrencyDigitsToNumber } from '../../../../shared/utils/formatters.util';
 
 export interface BeneficioFormDialogData {
   mode: 'create' | 'edit';
@@ -52,11 +53,15 @@ export class BeneficioFormDialogComponent {
   }
 
   onValorInput(rawValue: string): void {
-    const digitsOnly = rawValue.replace(/\D/g, '');
-    const normalizedDigits = digitsOnly === '' ? '0' : digitsOnly;
-    const numericValue = Number(normalizedDigits) / 100;
+    const numericValue = parseCurrencyDigitsToNumber(rawValue);
     this.form.controls.valor.setValue(numericValue);
     this.valorDisplay = this.formatCurrencyInput(numericValue);
+  }
+
+  onValorKeydown(event: KeyboardEvent): void {
+    if (!isAllowedNumericInputKey(event)) {
+      event.preventDefault();
+    }
   }
 
   onValorBlur(): void {

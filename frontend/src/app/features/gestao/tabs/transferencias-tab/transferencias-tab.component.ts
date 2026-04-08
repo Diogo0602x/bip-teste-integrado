@@ -12,7 +12,7 @@ import { NotificationService } from '../../../../shared/services/notification.se
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { FeedbackType } from '../../../../shared/enums/feedback-type.enum';
 import { GESTAO_UI_MESSAGES } from '../../constants/gestao-ui-messages.constants';
-import { formatCurrencyBRL } from '../../../../shared/utils/formatters.util';
+import { formatCurrencyBRL, isAllowedNumericInputKey, parseCurrencyDigitsToNumber } from '../../../../shared/utils/formatters.util';
 
 @Component({
   selector: 'app-transferencias-tab',
@@ -92,10 +92,15 @@ export class TransferenciasTabComponent {
   }
 
   onTransferAmountInput(raw: string): void {
-    const digitsOnly = raw.replace(/\D/g, '');
-    const numericValue = Number(digitsOnly === '' ? '0' : digitsOnly) / 100;
+    const numericValue = parseCurrencyDigitsToNumber(raw);
     this.transferenciaForm.controls.amount.setValue(numericValue);
     this.transferAmountDisplay = this.formatCurrency(numericValue);
+  }
+
+  onTransferAmountKeydown(event: KeyboardEvent): void {
+    if (!isAllowedNumericInputKey(event)) {
+      event.preventDefault();
+    }
   }
 
   onTransferAmountBlur(): void {
