@@ -1,0 +1,17 @@
+.table-shell {
+  border-radius: 12px;
+}
+
+.status-pill {
+  min-width: 92px;
+}
+
+.mobile-card-row .value {
+  word-break: break-word;
+}
+
+@media (max-width: 700px) {
+  .status-pill {
+    min-width: 78px;
+  }
+}

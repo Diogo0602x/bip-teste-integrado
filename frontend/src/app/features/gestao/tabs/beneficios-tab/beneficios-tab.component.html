@@ -1,0 +1,134 @@
+<mat-card class="panel-card table-card full-width">
+  <div class="header-row">
+    <div>
+      <h2>Lista de benefícios</h2>
+      <p class="section-description">Use as ações para visualizar, editar ou excluir itens cadastrados.</p>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold" (click)="submitBeneficio()">
+      <i class="bi bi-plus-lg"></i>
+      Criar novo benefício
+    </button>
+  </div>
+  <div class="table-tools">
+    <label class="tool-field">
+      <span>Status</span>
+      <select class="form-select form-select-sm" [ngModel]="statusFilter" (ngModelChange)="onStatusFilterChange($event)">
+        <option value="all">Todos</option>
+        <option value="active">Ativo</option>
+        <option value="inactive">Inativo</option>
+      </select>
+    </label>
+    <input
+      class="form-control form-control-sm tool-search-input"
+      [(ngModel)]="search"
+      (keyup.enter)="onSearch()"
+      placeholder="Buscar benefício" />
+    <button type="button" class="btn btn-outline-primary btn-sm" (click)="onSearch()">Buscar</button>
+    <button
+      type="button"
+      class="btn btn-sm clear-btn text-decoration-none"
+      [class.active]="hasActiveFilters"
+      [disabled]="!hasActiveFilters"
+      (click)="clearSearch()">
+      Limpar
+    </button>
+  </div>
+  @if (isLoading) {
+    <div class="loading-skeleton">
+      <div class="skeleton-line w-40"></div>
+      @for (_ of skeletonRows; track $index) {
+        <div class="skeleton-line w-100"></div>
+      }
+    </div>
+  } @else {
+    <div class="table-shell">
+      <table mat-table [dataSource]="beneficios" class="table desktop-table">
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>
+            <button type="button" class="header-sort-btn" (click)="toggleSort('nome')">
+              Nome
+              <i class="bi" [class.bi-sort-alpha-down]="sort !== 'nome' || dir === 'asc'" [class.bi-sort-alpha-up]="sort === 'nome' && dir === 'desc'"></i>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row.nome }}</td>
+        </ng-container>
+        <ng-container matColumnDef="valor">
+          <th mat-header-cell *matHeaderCellDef>
+            <button type="button" class="header-sort-btn" (click)="toggleSort('valor')">
+              Valor
+              <i class="bi" [class.bi-sort-numeric-down]="sort !== 'valor' || dir === 'asc'" [class.bi-sort-numeric-up]="sort === 'valor' && dir === 'desc'"></i>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let row">{{ formatCurrency(row.valor) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="ativo">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="status-pill" [class.is-active]="row.ativo" [class.is-inactive]="!row.ativo">
+              {{ row.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef>Ações</th>
+          <td mat-cell *matCellDef="let row" class="action-cell">
+            <div class="action-group">
+              <button type="button" class="btn btn-light btn-sm icon-btn view-btn" (click)="view(row)" aria-label="Visualizar benefício">
+                <i class="bi bi-eye"></i>
+              </button>
+              <button type="button" class="btn btn-light btn-sm icon-btn edit-btn" (click)="edit(row)" aria-label="Editar benefício">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button type="button" class="btn btn-light btn-sm icon-btn delete-btn" (click)="remove(row)" aria-label="Excluir benefício">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="beneficioColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: beneficioColumns"></tr>
+      </table>
+    </div>
+    <div class="mobile-list">
+      @for (row of beneficios; track row.id) {
+        <article class="mobile-card">
+          <div class="mobile-card-row"><span class="label">Nome</span><span class="value">{{ row.nome }}</span></div>
+          <div class="mobile-card-row"><span class="label">Valor</span><span class="value">{{ formatCurrency(row.valor) }}</span></div>
+          <div class="mobile-card-row">
+            <span class="label">Status</span>
+            <span class="status-pill" [class.is-active]="row.ativo" [class.is-inactive]="!row.ativo">{{ row.ativo ? 'Ativo' : 'Inativo' }}</span>
+          </div>
+          <div class="mobile-card-actions">
+            <button type="button" class="btn btn-light icon-btn view-btn" (click)="view(row)" aria-label="Visualizar benefício"><i class="bi bi-eye"></i></button>
+            <button type="button" class="btn btn-light icon-btn edit-btn" (click)="edit(row)" aria-label="Editar benefício"><i class="bi bi-pencil"></i></button>
+            <button type="button" class="btn btn-light icon-btn delete-btn" (click)="remove(row)" aria-label="Excluir benefício"><i class="bi bi-trash"></i></button>
+          </div>
+        </article>
+      }
+    </div>
+  }
+  @if (totalElements > 0 && !isLoading) {
+    <div class="pagination-bar">
+      <div class="pagination-top">
+        <div class="pagination-meta">Página {{ page + 1 }} de {{ totalPages || 1 }} ({{ totalElements }} itens)</div>
+        <div class="page-size-control">
+          <label class="tool-field compact">
+            <span>Itens por página</span>
+            <select class="form-select form-select-sm" [ngModel]="size" (ngModelChange)="onSizeChange($event)">
+              <option [ngValue]="5">5</option>
+              <option [ngValue]="10">10</option>
+              <option [ngValue]="20">20</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="pagination-actions">
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="prevPage()" [disabled]="page <= 0">Anterior</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="nextPage()" [disabled]="page + 1 >= totalPages">Próxima</button>
+      </div>
+    </div>
+  }
+  @if (!isLoading && beneficios.length === 0) {
+    <p class="empty-state">Nenhum benefício encontrado.</p>
+  }
+</mat-card>

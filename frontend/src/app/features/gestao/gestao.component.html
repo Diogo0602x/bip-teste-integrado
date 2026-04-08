@@ -1,0 +1,31 @@
+<div class="page-shell">
+  <mat-toolbar class="toolbar">
+    <div class="toolbar-content">
+      <div class="brand">
+        <i class="bi bi-wallet2 brand-icon"></i>
+        <div class="brand-text">
+          <strong>BIP Benefícios</strong>
+          <span>Painel de gestão, transferências e rastreabilidade</span>
+        </div>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <main class="container">
+    <mat-tab-group [(selectedIndex)]="selectedTab">
+      <mat-tab label="Benefícios">
+        <section class="grid">
+          <app-beneficios-tab></app-beneficios-tab>
+        </section>
+      </mat-tab>
+      <mat-tab label="Transferências">
+        <app-transferencias-tab (transferido)="onTransferido()"></app-transferencias-tab>
+      </mat-tab>
+      <mat-tab label="Histórico">
+        <app-historico-tab></app-historico-tab>
+      </mat-tab>
+    </mat-tab-group>
+  </main>
+
+  <footer class="footer">Sistema integrado com foco em segurança, usabilidade e rastreabilidade.</footer>
+</div>

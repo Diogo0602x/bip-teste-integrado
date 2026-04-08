@@ -1,0 +1,48 @@
+<mat-card class="panel-card">
+  <h2>Transferência entre benefícios</h2>
+  <p class="section-description">Selecione origem, destino e valor. O sistema valida saldo automaticamente.</p>
+  <div class="logic-box">
+    <p><strong>Como funciona:</strong> você transfere parte do saldo de um benefício de origem para outro de destino.</p>
+    <p>Antes de confirmar, o backend valida se a origem possui saldo suficiente, aplica lock de concorrência e executa tudo em uma transação atômica (se falhar, desfaz).</p>
+  </div>
+  <form [formGroup]="transferenciaForm" class="transfer-form">
+    <label class="tool-field">
+      <span>Origem</span>
+      <select class="form-select form-select-sm" formControlName="fromId">
+        <option [ngValue]="0">Selecione</option>
+        @for (b of origemOptions; track b.id) {
+          <option [ngValue]="b.id">{{ displayBeneficio(b) }}</option>
+        }
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Destino</span>
+      <select class="form-select form-select-sm" formControlName="toId">
+        <option [ngValue]="0">Selecione</option>
+        @for (b of destinoOptions; track b.id) {
+          <option [ngValue]="b.id">{{ displayBeneficio(b) }}</option>
+        }
+      </select>
+    </label>
+    <label class="tool-field">
+      <span>Valor</span>
+      <input
+        class="form-control form-control-sm"
+        type="text"
+        inputmode="decimal"
+        [value]="transferAmountDisplay"
+        (input)="onTransferAmountInput($any($event.target).value)"
+        (blur)="onTransferAmountBlur()" />
+      <small class="helper-text">Máximo disponível: {{ formatCurrency(maxTransferAmount) }}</small>
+    </label>
+  </form>
+  <div class="actions">
+    <button
+      type="button"
+      class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold"
+      [disabled]="!canTransfer"
+      (click)="transferir()">
+      Transferir
+    </button>
+  </div>
+</mat-card>

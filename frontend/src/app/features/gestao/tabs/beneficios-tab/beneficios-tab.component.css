@@ -1,0 +1,23 @@
+.table-card {
+  display: grid;
+  gap: 12px;
+}
+
+.header-row h2 {
+  margin-bottom: 4px;
+}
+
+.table-shell {
+  border-radius: 12px;
+}
+
+.pagination-bar {
+  border-top: 1px solid #edf0f7;
+  padding-top: 12px;
+}
+
+@media (max-width: 700px) {
+  .table-card {
+    gap: 10px;
+  }
+}

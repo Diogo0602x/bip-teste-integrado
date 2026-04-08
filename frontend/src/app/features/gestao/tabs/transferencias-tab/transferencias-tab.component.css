@@ -1,0 +1,19 @@
+.logic-box {
+  border: 1px solid #dce4ff;
+  background: #f5f7ff;
+  color: #2d3c7a;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 0 0 18px;
+  font-size: var(--fs-small);
+  line-height: 1.6;
+}
+
+.logic-box p { margin: 0 0 6px; }
+.logic-box p:last-child { margin-bottom: 0; }
+
+.transfer-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}

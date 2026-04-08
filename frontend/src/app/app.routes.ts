@@ -4,6 +4,6 @@ export const appRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./containers/dashboard.container').then((m) => m.DashboardContainer)
+      import('./containers/gestao.container').then((m) => m.GestaoContainer)
   }
 ];

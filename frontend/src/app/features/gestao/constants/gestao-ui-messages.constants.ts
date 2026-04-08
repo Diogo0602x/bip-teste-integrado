@@ -1,4 +1,4 @@
-export const DASHBOARD_UI_MESSAGES = {
+export const GESTAO_UI_MESSAGES = {
   beneficio: {
     loadError: "Não foi possível carregar os benefícios.",
     saveSuccess: "Benefício salvo com sucesso.",
