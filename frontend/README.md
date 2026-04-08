@@ -31,6 +31,20 @@
 
 A URL base versionada (`http://localhost:8080/api/v1`) está em `src/environments/environment.ts` (`apiBaseUrl`). Os serviços HTTP montam o path do recurso a partir desse valor.
 
+## Gestão e tabs
+
+- A tela principal de gestão usa três abas: **Benefícios**, **Transferências** e **Histórico**.
+- Fluxo de transferência atualiza benefícios e redireciona para histórico após sucesso.
+- O histórico consome `GET /beneficios/transferencias/historico` com paginação.
+
+## Inputs numéricos de valor
+
+- Campos monetários (criar/editar benefício e transferência) aceitam apenas entrada numérica no teclado.
+- Implementação usa `inputmode="numeric"` + bloqueio de tecla inválida (`keydown`) + sanitização de entrada.
+- A lógica compartilhada está em `src/app/shared/utils/formatters.util.ts`:
+  - `parseCurrencyDigitsToNumber`
+  - `isAllowedNumericInputKey`
+
 ## Docker
 
 Na raiz do monorepo, o serviço `frontend` do `docker-compose` usa esta pasta como contexto (`./frontend`).

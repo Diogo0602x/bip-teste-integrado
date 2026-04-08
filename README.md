@@ -58,6 +58,12 @@ Base REST: `http://localhost:8080/api/v1` — recursos em `/beneficios` (ex.: li
 
 - `GET` listagem · `GET /{id}` · `POST` · `PUT /{id}` · `DELETE /{id}`
 - `POST /transferencias` — corpo: `{ "fromId", "toId", "amount" }`
+- `GET /transferencias/historico` — histórico paginado das transferências (auditoria)
+
+### Observação sobre Docker e banco
+
+- A aplicação está configurada para executar o SQL de inicialização (`schema.sql`) em runtime também no perfil Docker, garantindo criação de `TRANSFERENCIA_AUDITORIA`.
+- Se precisar recomeçar com banco limpo: `docker compose down -v && docker compose up --build`.
 
 ---
 
