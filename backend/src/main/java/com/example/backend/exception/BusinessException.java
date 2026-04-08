@@ -1,6 +1,6 @@
 package com.example.backend.exception;
 
-public class BusinessException extends RuntimeException {
+public final class BusinessException extends AppException {
     public BusinessException(String message) {
         super(message);
     }

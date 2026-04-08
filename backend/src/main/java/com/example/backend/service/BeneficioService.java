@@ -44,7 +44,7 @@ public class BeneficioService {
     @Transactional(readOnly = true)
     public Beneficio getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessages.BENEFICIO_NOT_FOUND, id)));
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.BENEFICIO_NOT_FOUND.formatted(id)));
     }
 
     @Transactional
@@ -63,7 +63,7 @@ public class BeneficioService {
     @Transactional
     public void delete(Long id) {
         Beneficio beneficio = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessages.BENEFICIO_NOT_FOUND, id)));
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.BENEFICIO_NOT_FOUND.formatted(id)));
         if (Boolean.TRUE.equals(beneficio.getAtivo())) {
             throw new BusinessException(ErrorMessages.DELETE_ONLY_INACTIVE);
         }

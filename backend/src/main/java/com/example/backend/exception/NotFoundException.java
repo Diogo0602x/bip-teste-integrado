@@ -1,6 +1,6 @@
 package com.example.backend.exception;
 
-public class NotFoundException extends RuntimeException {
+public final class NotFoundException extends AppException {
     public NotFoundException(String message) {
         super(message);
     }

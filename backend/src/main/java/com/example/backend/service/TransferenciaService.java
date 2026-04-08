@@ -44,6 +44,6 @@ public class TransferenciaService {
 
     private Beneficio lock(Long id) {
         return repository.findByIdForUpdate(id)
-                .orElseThrow(() -> new NotFoundException(String.format(ErrorMessages.BENEFICIO_NOT_FOUND, id)));
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.BENEFICIO_NOT_FOUND.formatted(id)));
     }
 }
