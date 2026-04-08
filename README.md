@@ -70,3 +70,16 @@ Base REST: `http://localhost:8080/api/v1` — recursos em `/beneficios` (ex.: li
 ## Mais informações
 
 - `frontend/README.md` — Jest, cobertura e scripts npm.
+
+## Tela de benefícios
+
+<img width="1417" height="904" alt="aba-beneficios" src="https://github.com/user-attachments/assets/23c1c4b2-3192-43a6-834c-c50c96714247" />
+
+## Tela de transferências
+
+<img width="1411" height="901" alt="aba-transferencias" src="https://github.com/user-attachments/assets/ad979549-6f84-4413-aba0-a3a9248576bf" />
+
+## Tela de histórico
+
+<img width="1418" height="904" alt="aba-historico" src="https://github.com/user-attachments/assets/2123d8dd-e1a0-43d4-8b02-2be3ce38e2a6" />
+
