@@ -31,7 +31,7 @@ export const EMPTY_PAGED_RESPONSE: PagedResponse<Beneficio> = {
 
 export const HISTORICO: TransferenciaHistorico[] = [
   {
-    id: 'abc-001',
+    id: 1,
     fromId: 1,
     toId: 2,
     fromNome: 'Vale Alimentação',
@@ -42,3 +42,25 @@ export const HISTORICO: TransferenciaHistorico[] = [
     detalhe: 'Transferência realizada com sucesso',
   },
 ];
+
+export const HISTORICO_PAGED_RESPONSE: PagedResponse<TransferenciaHistorico> = {
+  content: HISTORICO,
+  page: 0,
+  size: 20,
+  totalElements: 1,
+  totalPages: 1,
+  sort: 'createdAt',
+  dir: 'desc',
+  query: null as unknown as string,
+};
+
+export const EMPTY_HISTORICO_PAGED_RESPONSE: PagedResponse<TransferenciaHistorico> = {
+  content: [],
+  page: 0,
+  size: 20,
+  totalElements: 0,
+  totalPages: 0,
+  sort: 'createdAt',
+  dir: 'desc',
+  query: null as unknown as string,
+};

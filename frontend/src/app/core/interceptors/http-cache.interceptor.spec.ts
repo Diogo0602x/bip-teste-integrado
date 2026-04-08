@@ -43,6 +43,20 @@ describe('httpCacheInterceptor', () => {
     });
   });
 
+  it('em GET ignora evento que não é HttpResponse no tap', (done) => {
+    const store = TestBed.inject(HttpCacheStore);
+    const nonResponse = { type: 0 } as any;
+    const next = jest.fn().mockReturnValue(of(nonResponse));
+    const req = new HttpRequest('GET', 'http://localhost/non-response');
+    runInInjectionContext(injector, () => {
+      httpCacheInterceptor(req, next).subscribe((ev) => {
+        expect(ev).toBe(nonResponse);
+        expect(store.get(req.urlWithParams)).toBeUndefined();
+        done();
+      });
+    });
+  });
+
   it('em GET com cache devolve clone sem chamar next de novo', (done) => {
     const resp = new HttpResponse({ body: { v: 2 }, status: 200 });
     const next = jest.fn().mockReturnValue(of(resp));

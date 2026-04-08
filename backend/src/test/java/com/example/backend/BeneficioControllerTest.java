@@ -2,6 +2,7 @@ package com.example.backend;
 
 import com.example.backend.domain.Beneficio;
 import com.example.backend.repository.BeneficioRepository;
+import com.example.backend.repository.TransferenciaAuditoriaRepository;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,11 +31,15 @@ class BeneficioControllerTest {
     @Autowired
     private BeneficioRepository repository;
 
+    @Autowired
+    private TransferenciaAuditoriaRepository auditoriaRepository;
+
     private Long idOrigem;
     private Long idDestino;
 
     @BeforeEach
     void setupData() {
+        auditoriaRepository.deleteAll();
         repository.deleteAll();
 
         Beneficio origem = new Beneficio();
@@ -159,5 +164,34 @@ class BeneficioControllerTest {
     @Test
     void deveRejeitarExclusaoQuandoAtivo() throws Exception {
         mockMvc.perform(delete("/api/v1/beneficios/" + idOrigem)).andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void deveListarHistoricoVazio() throws Exception {
+        mockMvc.perform(get("/api/v1/beneficios/transferencias/historico"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.totalElements").value(0));
+    }
+
+    @Test
+    void deveListarHistoricoAposTransferencia() throws Exception {
+        String payload = String.format("""
+                {
+                  "fromId": %d,
+                  "toId": %d,
+                  "amount": 50.00
+                }
+                """, idOrigem, idDestino);
+        mockMvc.perform(post("/api/v1/beneficios/transferencias")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/v1/beneficios/transferencias/historico"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].fromNome").value("Beneficio A"))
+                .andExpect(jsonPath("$.content[0].toNome").value("Beneficio B"))
+                .andExpect(jsonPath("$.content[0].status").value("SUCESSO"));
     }
 }

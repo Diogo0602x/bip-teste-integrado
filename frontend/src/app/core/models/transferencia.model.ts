@@ -5,7 +5,7 @@ export interface TransferenciaRequest {
 }
 
 export interface TransferenciaHistorico {
-  id: string;
+  id: number;
   fromId: number;
   toId: number;
   fromNome: string;

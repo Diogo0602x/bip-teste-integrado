@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Beneficio, BeneficioPayload, BeneficioQueryParams, PagedResponse } from '../models/beneficio.model';
-import { TransferenciaRequest } from '../models/transferencia.model';
+import { TransferenciaHistorico, TransferenciaRequest } from '../models/transferencia.model';
 
 @Injectable({ providedIn: 'root' })
 export class BeneficioApiService {
@@ -37,5 +37,10 @@ export class BeneficioApiService {
 
   transfer(payload: TransferenciaRequest): Observable<void> {
     return this.http.post<void>(`${this.api}/transferencias`, payload);
+  }
+
+  getHistorico(page = 0, size = 20): Observable<PagedResponse<TransferenciaHistorico>> {
+    const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<PagedResponse<TransferenciaHistorico>>(`${this.api}/transferencias/historico`, { params });
   }
 }

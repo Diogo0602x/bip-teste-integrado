@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { DashboardPage } from '../pages/dashboard.page';
-import { BENEFICIOS, PAGED_RESPONSE, HISTORICO } from '../fixtures/beneficios.fixture';
+import { BENEFICIOS, PAGED_RESPONSE, HISTORICO_PAGED_RESPONSE, EMPTY_HISTORICO_PAGED_RESPONSE } from '../fixtures/beneficios.fixture';
 
 test.describe('Transferências - formulário', () => {
   let dashboard: DashboardPage;
@@ -8,6 +8,7 @@ test.describe('Transferências - formulário', () => {
   test.beforeEach(async ({ page }) => {
     dashboard = new DashboardPage(page);
     await dashboard.mockBeneficiosList();
+    await dashboard.mockHistorico();
     await dashboard.goto();
     await dashboard.waitForTable();
     await dashboard.clickTab('Transferências');
@@ -74,6 +75,7 @@ test.describe('Histórico de transferências', () => {
   test.beforeEach(async ({ page }) => {
     dashboard = new DashboardPage(page);
     await dashboard.mockBeneficiosList();
+    await dashboard.mockHistorico(EMPTY_HISTORICO_PAGED_RESPONSE);
     await dashboard.goto();
     await dashboard.waitForTable();
     await dashboard.clickTab('Histórico');
@@ -84,6 +86,7 @@ test.describe('Histórico de transferências', () => {
   });
 
   test('após transferência bem sucedida o histórico é atualizado', async ({ page }) => {
+    await dashboard.mockHistorico(HISTORICO_PAGED_RESPONSE);
     await dashboard.mockTransferencia(200);
     await dashboard.clickTab('Transferências');
 

@@ -6,7 +6,6 @@ import { DashboardComponent } from './dashboard.component';
 import { BeneficioApiService } from '../../core/services/beneficio-api.service';
 import { BeneficioListState } from '../../store/beneficio-list.store';
 import { BeneficioListStore } from '../../store/beneficio-list.store';
-import { TransferenciaHistoryService } from '../../core/services/transferencia-history.service';
 import { NotificationService } from '../../shared/services/notification.service';
 import { DashboardTab } from '../../core/enums/dashboard-tab.enum';
 import { Beneficio } from '../../core/models/beneficio.model';
@@ -28,16 +27,13 @@ describe('DashboardComponent', () => {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
-    transfer: jest.fn()
+    transfer: jest.fn(),
+    getHistorico: jest.fn()
   };
   const listStore = {
     state$: state$.asObservable(),
     load: jest.fn(),
     invalidate: jest.fn()
-  };
-  const history = {
-    list: jest.fn().mockReturnValue([]),
-    add: jest.fn()
   };
   const notification = {
     show: jest.fn()
@@ -76,6 +72,7 @@ describe('DashboardComponent', () => {
     jest.clearAllMocks();
     dialogOpen.mockReset();
     dialogOpen.mockImplementation(() => ({ afterClosed: () => of(undefined) }));
+    api.getHistorico.mockReturnValue(of({ content: [], page: 0, size: 20, totalElements: 0, totalPages: 0, sort: 'createdAt', dir: 'desc', query: null }));
     state$.next({
       items: [],
       page: 0,
@@ -89,7 +86,6 @@ describe('DashboardComponent', () => {
       providers: [
         { provide: BeneficioApiService, useValue: api },
         { provide: BeneficioListStore, useValue: listStore },
-        { provide: TransferenciaHistoryService, useValue: history },
         { provide: NotificationService, useValue: notification },
         { provide: MatDialog, useValue: { open: dialogOpen } }
       ]
@@ -101,9 +97,9 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('ngOnInit chama load e history.list', () => {
+  it('ngOnInit chama load e getHistorico', () => {
     expect(listStore.load).toHaveBeenCalled();
-    expect(history.list).toHaveBeenCalled();
+    expect(api.getHistorico).toHaveBeenCalled();
   });
 
   it('submitBeneficio sem payload não chama api', () => {
@@ -206,9 +202,10 @@ describe('DashboardComponent', () => {
     component.transferenciaForm.setValue({ fromId: 1, toId: 2, amount: 10 });
     dialogOpen.mockReturnValueOnce({ afterClosed: () => of(true) });
     api.transfer.mockReturnValueOnce(of(undefined));
+    api.getHistorico.mockReturnValueOnce(of({ content: [], page: 0, size: 20, totalElements: 0, totalPages: 0, sort: 'createdAt', dir: 'desc', query: null }));
     component.transferir();
     expect(api.transfer).toHaveBeenCalled();
-    expect(history.add).toHaveBeenCalled();
+    expect(api.getHistorico).toHaveBeenCalled();
     expect(component.selectedTab).toBe(DashboardTab.Historico);
   });
 

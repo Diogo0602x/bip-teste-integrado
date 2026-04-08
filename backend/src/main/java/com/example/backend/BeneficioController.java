@@ -4,7 +4,9 @@ import com.example.backend.domain.Beneficio;
 import com.example.backend.dto.BeneficioRequest;
 import com.example.backend.dto.PagedResponse;
 import com.example.backend.dto.TransferenciaRequest;
+import com.example.backend.dto.TransferenciaAuditoriaResponse;
 import com.example.backend.service.BeneficioService;
+import com.example.backend.service.TransferenciaHistoricoService;
 import com.example.backend.service.TransferenciaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,10 +33,14 @@ public class BeneficioController {
 
     private final BeneficioService beneficioService;
     private final TransferenciaService transferenciaService;
+    private final TransferenciaHistoricoService historicoService;
 
-    public BeneficioController(BeneficioService beneficioService, TransferenciaService transferenciaService) {
+    public BeneficioController(BeneficioService beneficioService,
+                                TransferenciaService transferenciaService,
+                                TransferenciaHistoricoService historicoService) {
         this.beneficioService = beneficioService;
         this.transferenciaService = transferenciaService;
+        this.historicoService = historicoService;
     }
 
     @GetMapping
@@ -87,6 +93,14 @@ public class BeneficioController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void transfer(@Valid @RequestBody TransferenciaRequest request) {
         transferenciaService.transfer(request.fromId(), request.toId(), request.amount());
+    }
+
+    @GetMapping("/transferencias/historico")
+    public PagedResponse<TransferenciaAuditoriaResponse> historico(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return historicoService.list(page, size);
     }
 
     private String normalizeSort(String sort) {

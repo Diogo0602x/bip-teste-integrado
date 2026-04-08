@@ -9,11 +9,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { Beneficio, BeneficioPayload, BeneficioQueryParams } from '../../core/models/beneficio.model';
 import { TransferenciaHistorico, TransferenciaRequest } from '../../core/models/transferencia.model';
 import { BeneficioApiService } from '../../core/services/beneficio-api.service';
-import { TransferenciaHistoryService } from '../../core/services/transferencia-history.service';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { DashboardTab } from '../../core/enums/dashboard-tab.enum';
 import { formatCurrencyBRL, formatDateTimeBR } from '../../shared/utils/formatters.util';
-import { buildTransferHistory } from '../../shared/utils/transfer.util';
 import { NotificationService } from '../../shared/services/notification.service';
 import { FeedbackType } from '../../shared/enums/feedback-type.enum';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -42,7 +40,6 @@ export class DashboardComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly service = inject(BeneficioApiService);
   private readonly listStore = inject(BeneficioListStore);
-  private readonly history = inject(TransferenciaHistoryService);
   private readonly notification = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
   private readonly fb = inject(FormBuilder);
@@ -83,7 +80,7 @@ export class DashboardComponent implements OnInit {
       });
 
     this.load();
-    this.historico = this.history.list();
+    this.loadHistorico();
     this.transferenciaForm.valueChanges.subscribe((value) => {
       if (value.fromId && value.toId && value.fromId === value.toId) {
         this.transferenciaForm.patchValue({ toId: 0 }, { emitEvent: false });
@@ -195,15 +192,12 @@ export class DashboardComponent implements OnInit {
       this.service.transfer(payload).subscribe({
         next: () => {
           this.listStore.invalidate();
-          this.history.add(buildTransferHistory(payload, from, to, 'SUCESSO', 'Transferência concluída'));
-          this.historico = this.history.list();
+          this.loadHistorico();
           this.selectedTab = DashboardTab.Historico;
           this.showMessage(DASHBOARD_UI_MESSAGES.transferencia.success, FeedbackType.Success);
           this.load();
         },
         error: (err) => {
-          this.history.add(buildTransferHistory(payload, from, to, 'FALHA', 'Falha na validação de transferência'));
-          this.historico = this.history.list();
           this.showMessage(err?.error?.message ?? DASHBOARD_UI_MESSAGES.transferencia.error, FeedbackType.Error);
         }
       });
@@ -212,6 +206,12 @@ export class DashboardComponent implements OnInit {
 
   formatDate(iso: string): string {
     return formatDateTimeBR(iso);
+  }
+
+  private loadHistorico(): void {
+    this.service.getHistorico(0, 20).subscribe({
+      next: (res) => { this.historico = res.content; }
+    });
   }
 
   displayBeneficio(item: Beneficio): string {

@@ -95,6 +95,17 @@ export class DashboardPage {
     });
   }
 
+  async mockHistorico(response?: object) {
+    const empty = { content: [], page: 0, size: 20, totalElements: 0, totalPages: 0, sort: 'createdAt', dir: 'desc', query: null };
+    await this.page.route(`${API}/beneficios/transferencias/historico*`, (route) => {
+      if (route.request().method() === 'GET') {
+        route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(response ?? empty) });
+      } else {
+        route.continue();
+      }
+    });
+  }
+
   async mockTransferencia(status = 200) {
     await this.page.route(`${API}/beneficios/transferencias`, (route) => {
       if (status === 200) {

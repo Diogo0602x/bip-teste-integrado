@@ -64,4 +64,20 @@ describe('BeneficioApiService', () => {
       .expectOne((r) => r.url.endsWith('/transferencias'))
       .flush(null, { status: 204, statusText: 'No Content' });
   });
+
+  it('getHistorico envia page e size', () => {
+    service.getHistorico(1, 10).subscribe();
+    const req = httpMock.expectOne((r) => r.url.includes('/transferencias/historico'));
+    expect(req.request.params.get('page')).toBe('1');
+    expect(req.request.params.get('size')).toBe('10');
+    req.flush({ content: [], page: 1, size: 10, totalElements: 0, totalPages: 0, sort: 'createdAt', dir: 'desc', query: null });
+  });
+
+  it('getHistorico usa defaults quando sem argumentos', () => {
+    service.getHistorico().subscribe();
+    const req = httpMock.expectOne((r) => r.url.includes('/transferencias/historico'));
+    expect(req.request.params.get('page')).toBe('0');
+    expect(req.request.params.get('size')).toBe('20');
+    req.flush({ content: [], page: 0, size: 20, totalElements: 0, totalPages: 0, sort: 'createdAt', dir: 'desc', query: null });
+  });
 });
