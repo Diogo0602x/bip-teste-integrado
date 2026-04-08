@@ -1,6 +1,6 @@
 # BIP — monorepo (backend + frontend)
 
-API **Spring Boot** + UI **Angular** + **PostgreSQL** via Docker Compose.
+API **Spring Boot (Java 25)** + UI **Angular 21** + **PostgreSQL** via Docker Compose.
 
 | Pasta | Conteúdo |
 |-------|----------|
@@ -38,7 +38,7 @@ cd backend
 ./mvnw spring-boot:run
 ```
 
-Testes + cobertura: `./mvnw verify` (JDK 17+; no Windows/Git Bash defina `JAVA_HOME` se precisar).
+Testes + cobertura: `./mvnw verify` (JDK 25; no Windows/Git Bash defina `JAVA_HOME` se precisar).
 
 **Frontend** (`frontend/`):
 
@@ -57,8 +57,8 @@ Testes: `npm test` · Build: `npm run build`
 Base REST: `http://localhost:8080/api/v1` — recursos em `/beneficios` (ex.: listagem em `GET /api/v1/beneficios`).
 
 - `GET` listagem · `GET /{id}` · `POST` · `PUT /{id}` · `DELETE /{id}`
-- `POST /transferencias` — corpo: `{ "fromId", "toId", "amount" }`
-- `GET /transferencias/historico` — histórico paginado das transferências (auditoria)
+- `POST /beneficios/transferencias` — corpo: `{ "fromId", "toId", "amount" }`
+- `GET /beneficios/transferencias/historico` — histórico paginado das transferências (auditoria)
 
 ### Observação sobre Docker e banco
 

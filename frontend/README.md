@@ -1,4 +1,4 @@
-# Frontend (Angular)
+# Frontend (Angular 21)
 
 ## Requisitos
 
