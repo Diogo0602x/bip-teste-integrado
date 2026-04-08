@@ -1,5 +1,4 @@
-import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,7 +16,6 @@ export interface BeneficioFormDialogData {
   selector: 'app-beneficio-form-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -29,7 +27,9 @@ export interface BeneficioFormDialogData {
   styleUrl: './beneficio-form-dialog.component.css'
 })
 export class BeneficioFormDialogComponent {
-  valorDisplay = this.formatCurrencyInput(0);
+  private readonly fb = inject(FormBuilder);
+  private readonly dialogRef = inject(MatDialogRef<BeneficioFormDialogComponent, BeneficioPayload>);
+  readonly data = inject<BeneficioFormDialogData>(MAT_DIALOG_DATA);
 
   readonly form = this.fb.nonNullable.group({
     nome: ['', [Validators.required, Validators.minLength(3)]],
@@ -38,19 +38,16 @@ export class BeneficioFormDialogComponent {
     ativo: [true]
   });
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly dialogRef: MatDialogRef<BeneficioFormDialogComponent, BeneficioPayload>,
-    @Inject(MAT_DIALOG_DATA) public readonly data: BeneficioFormDialogData
-  ) {
-    if (data.beneficio) {
+  valorDisplay = this.formatCurrencyInput(this.data.beneficio?.valor ?? 0);
+
+  constructor() {
+    if (this.data.beneficio) {
       this.form.patchValue({
-        nome: data.beneficio.nome,
-        descricao: data.beneficio.descricao,
-        valor: data.beneficio.valor,
-        ativo: data.beneficio.ativo
+        nome: this.data.beneficio.nome,
+        descricao: this.data.beneficio.descricao,
+        valor: this.data.beneficio.valor,
+        ativo: this.data.beneficio.ativo
       });
-      this.valorDisplay = this.formatCurrencyInput(data.beneficio.valor);
     }
   }
 

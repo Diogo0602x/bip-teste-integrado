@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Beneficio, BeneficioQueryParams } from '../core/models/beneficio.model';
 import { BeneficioApiService } from '../core/services/beneficio-api.service';
@@ -23,11 +23,10 @@ const INITIAL_STATE: BeneficioListState = {
 
 @Injectable({ providedIn: 'root' })
 export class BeneficioListStore {
+  private readonly api = inject(BeneficioApiService);
   private readonly stateSubject = new BehaviorSubject<BeneficioListState>(INITIAL_STATE);
   readonly state$ = this.stateSubject.asObservable();
   private readonly queryCache = new Map<string, BeneficioListState>();
-
-  constructor(private readonly api: BeneficioApiService) {}
 
   load(params: BeneficioQueryParams, force = false): void {
     const key = JSON.stringify(params);

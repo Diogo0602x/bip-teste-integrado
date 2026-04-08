@@ -1,10 +1,8 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -29,13 +27,10 @@ import { BeneficioListStore } from '../../store/beneficio-list.store';
   selector: 'app-dashboard',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
-    MatDialogModule,
-    MatSnackBarModule,
     MatTableModule,
     MatTabsModule,
     MatToolbarModule
@@ -45,6 +40,12 @@ import { BeneficioListStore } from '../../store/beneficio-list.store';
 })
 export class DashboardComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly service = inject(BeneficioApiService);
+  private readonly listStore = inject(BeneficioListStore);
+  private readonly history = inject(TransferenciaHistoryService);
+  private readonly notification = inject(NotificationService);
+  private readonly dialog = inject(MatDialog);
+  private readonly fb = inject(FormBuilder);
   readonly tabs = DashboardTab;
   selectedTab = DashboardTab.Beneficios;
   beneficios: Beneficio[] = [];
@@ -68,15 +69,6 @@ export class DashboardComponent implements OnInit {
     toId: [0, [Validators.required, Validators.min(1)]],
     amount: [0, [Validators.required, Validators.min(0.01)]]
   });
-
-  constructor(
-    private readonly service: BeneficioApiService,
-    private readonly listStore: BeneficioListStore,
-    private readonly history: TransferenciaHistoryService,
-    private readonly notification: NotificationService,
-    private readonly dialog: MatDialog,
-    private readonly fb: FormBuilder
-  ) {}
 
   ngOnInit(): void {
     this.listStore.state$
