@@ -24,5 +24,7 @@ cors:
 springdoc:
   api-docs:
     path: /api/openapi
+    enabled: true
   swagger-ui:
     path: /api/docs
+    enabled: true
