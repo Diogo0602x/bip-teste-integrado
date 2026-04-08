@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ data.mode === 'create' ? 'Criar novo benefício' : 'Editar benefício' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="form">
+    <mat-form-field appearance="outline">
+      <mat-label>Nome</mat-label>
+      <input matInput formControlName="nome">
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="description-field">
+      <mat-label>Descrição</mat-label>
+      <textarea matInput formControlName="descricao" rows="4"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Valor</mat-label>
+      <input
+        matInput
+        type="text"
+        inputmode="decimal"
+        [value]="valorDisplay"
+        (input)="onValorInput($any($event.target).value)"
+        (blur)="onValorBlur()">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="ativo">
+        <mat-option [value]="true">Ativo</mat-option>
+        <mat-option [value]="false">Inativo</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancelar</button>
+  <button mat-flat-button color="primary" [disabled]="!canSave" (click)="save()">Salvar</button>
+</mat-dialog-actions>

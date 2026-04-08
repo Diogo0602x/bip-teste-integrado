@@ -1,0 +1,28 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .mat-mdc-dialog-content {
+  max-height: 72vh;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.form mat-form-field {
+  width: 100%;
+}
+
+.description-field {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 720px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+}

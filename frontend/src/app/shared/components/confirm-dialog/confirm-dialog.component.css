@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .mat-mdc-dialog-content {
+  padding-top: 4px;
+}
+
+p {
+  margin: 0;
+  color: #344054;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+:host ::ng-deep .mat-mdc-dialog-actions {
+  gap: 8px;
+}

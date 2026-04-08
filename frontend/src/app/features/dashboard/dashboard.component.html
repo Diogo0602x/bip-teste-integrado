@@ -1,0 +1,265 @@
+<div class="page-shell">
+  <mat-toolbar class="toolbar">
+    <div class="toolbar-content">
+      <div class="brand">
+        <i class="bi bi-wallet2 brand-icon"></i>
+        <div class="brand-text">
+          <strong>BIP Benefícios</strong>
+          <span>Painel de gestão, transferências e rastreabilidade</span>
+        </div>
+      </div>
+    </div>
+  </mat-toolbar>
+
+  <main class="container">
+    <mat-tab-group [(selectedIndex)]="selectedTab">
+      <mat-tab label="Benefícios">
+        <section class="grid">
+          <mat-card class="panel-card table-card full-width">
+            <div class="header-row">
+              <div>
+                <h2>Lista de benefícios</h2>
+                <p class="section-description">Use as ações para visualizar, editar ou excluir itens cadastrados.</p>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 fw-semibold" (click)="submitBeneficio()">
+                <i class="bi bi-plus-lg"></i>
+                Criar novo benefício
+              </button>
+            </div>
+            <div class="table-tools">
+              <label class="tool-field">
+                <span>Status</span>
+                <select class="form-select form-select-sm" [ngModel]="statusFilter" (ngModelChange)="onStatusFilterChange($event)">
+                  <option value="all">Todos</option>
+                  <option value="active">Ativo</option>
+                  <option value="inactive">Inativo</option>
+                </select>
+              </label>
+              <input
+                class="form-control form-control-sm tool-search-input"
+                [(ngModel)]="search"
+                (keyup.enter)="onSearch()"
+                placeholder="Buscar benefício" />
+              <button type="button" class="btn btn-outline-primary btn-sm" (click)="onSearch()">Buscar</button>
+              <button
+                type="button"
+                class="btn btn-sm clear-btn text-decoration-none"
+                [class.active]="hasActiveFilters"
+                [disabled]="!hasActiveFilters"
+                (click)="clearSearch()">
+                Limpar
+              </button>
+            </div>
+            <div class="loading-skeleton" *ngIf="isLoading">
+              <div class="skeleton-line w-40"></div>
+              <div class="skeleton-line w-100" *ngFor="let _ of skeletonRows"></div>
+            </div>
+            <div class="table-shell" *ngIf="!isLoading">
+              <table mat-table [dataSource]="beneficios" class="table desktop-table">
+                <ng-container matColumnDef="nome">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <button type="button" class="header-sort-btn" (click)="toggleSort('nome')">
+                      Nome
+                      <i class="bi" [class.bi-sort-alpha-down]="sort !== 'nome' || dir === 'asc'" [class.bi-sort-alpha-up]="sort === 'nome' && dir === 'desc'"></i>
+                    </button>
+                  </th>
+                  <td mat-cell *matCellDef="let row">{{ row.nome }}</td>
+                </ng-container>
+                <ng-container matColumnDef="valor">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <button type="button" class="header-sort-btn" (click)="toggleSort('valor')">
+                      Valor
+                      <i class="bi" [class.bi-sort-numeric-down]="sort !== 'valor' || dir === 'asc'" [class.bi-sort-numeric-up]="sort === 'valor' && dir === 'desc'"></i>
+                    </button>
+                  </th>
+                  <td mat-cell *matCellDef="let row">{{ formatCurrency(row.valor) }}</td>
+                </ng-container>
+                <ng-container matColumnDef="ativo">
+                  <th mat-header-cell *matHeaderCellDef>Status</th>
+                  <td mat-cell *matCellDef="let row">
+                    <span class="status-pill" [class.is-active]="row.ativo" [class.is-inactive]="!row.ativo">
+                      {{ row.ativo ? 'Ativo' : 'Inativo' }}
+                    </span>
+                  </td>
+                </ng-container>
+                <ng-container matColumnDef="acoes">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let row" class="action-cell">
+                    <div class="action-group">
+                      <button type="button" class="btn btn-light btn-sm icon-btn view-btn" (click)="view(row)" aria-label="Visualizar benefício">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                      <button type="button" class="btn btn-light btn-sm icon-btn edit-btn" (click)="edit(row)" aria-label="Editar benefício">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+                      <button type="button" class="btn btn-light btn-sm icon-btn delete-btn" (click)="remove(row)" aria-label="Excluir benefício">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="beneficioColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: beneficioColumns"></tr>
+              </table>
+            </div>
+            <div class="mobile-list" *ngIf="!isLoading">
+              <article class="mobile-card" *ngFor="let row of beneficios">
+                <div class="mobile-card-row">
+                  <span class="label">Nome</span>
+                  <span class="value">{{ row.nome }}</span>
+                </div>
+                <div class="mobile-card-row">
+                  <span class="label">Valor</span>
+                  <span class="value">{{ formatCurrency(row.valor) }}</span>
+                </div>
+                <div class="mobile-card-row">
+                  <span class="label">Status</span>
+                  <span class="status-pill" [class.is-active]="row.ativo" [class.is-inactive]="!row.ativo">
+                    {{ row.ativo ? 'Ativo' : 'Inativo' }}
+                  </span>
+                </div>
+                <div class="mobile-card-actions">
+                  <button type="button" class="btn btn-light icon-btn view-btn" (click)="view(row)" aria-label="Visualizar benefício">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button type="button" class="btn btn-light icon-btn edit-btn" (click)="edit(row)" aria-label="Editar benefício">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button type="button" class="btn btn-light icon-btn delete-btn" (click)="remove(row)" aria-label="Excluir benefício">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </article>
+            </div>
+            <div class="pagination-bar" *ngIf="totalElements > 0 && !isLoading">
+              <div class="pagination-top">
+                <div class="pagination-meta">
+                  Página {{ page + 1 }} de {{ totalPages || 1 }} ({{ totalElements }} itens)
+                </div>
+                <div class="page-size-control">
+                  <label class="tool-field compact">
+                    <span>Itens por página</span>
+                    <select class="form-select form-select-sm" [ngModel]="size" (ngModelChange)="onSizeChange($event)">
+                      <option [ngValue]="5">5</option>
+                      <option [ngValue]="10">10</option>
+                      <option [ngValue]="20">20</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="pagination-actions">
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="prevPage()" [disabled]="page <= 0">Anterior</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="nextPage()" [disabled]="page + 1 >= totalPages">Próxima</button>
+              </div>
+            </div>
+            <p class="empty-state" *ngIf="!isLoading && beneficios.length === 0">Nenhum benefício encontrado.</p>
+          </mat-card>
+        </section>
+      </mat-tab>
+
+      <mat-tab label="Transferências">
+        <mat-card class="panel-card">
+          <h2>Transferência entre benefícios</h2>
+          <p class="section-description">Selecione origem, destino e valor. O sistema valida saldo automaticamente.</p>
+          <div class="logic-box">
+            <p><strong>Como funciona:</strong> você transfere parte do saldo de um benefício de origem para outro de destino.</p>
+            <p>Antes de confirmar, o backend valida se a origem possui saldo suficiente, aplica lock de concorrência e executa tudo em uma transação atômica (se falhar, desfaz).</p>
+          </div>
+          <form [formGroup]="transferenciaForm" class="form">
+            <label class="tool-field">
+              <span>Origem</span>
+              <select class="form-select form-select-sm" formControlName="fromId">
+                <option [ngValue]="0">Selecione</option>
+                <option *ngFor="let b of origemOptions" [ngValue]="b.id">{{ displayBeneficio(b) }}</option>
+              </select>
+            </label>
+            <label class="tool-field">
+              <span>Destino</span>
+              <select class="form-select form-select-sm" formControlName="toId">
+                <option [ngValue]="0">Selecione</option>
+                <option *ngFor="let b of destinoOptions" [ngValue]="b.id">{{ displayBeneficio(b) }}</option>
+              </select>
+            </label>
+            <label class="tool-field">
+              <span>Valor</span>
+              <input
+                class="form-control form-control-sm"
+                type="text"
+                inputmode="decimal"
+                [value]="transferAmountDisplay"
+                (input)="onTransferAmountInput($any($event.target).value)"
+                (blur)="onTransferAmountBlur()" />
+              <small class="helper-text">Máximo disponível: {{ formatCurrency(maxTransferAmount) }}</small>
+            </label>
+          </form>
+          <div class="actions">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm rounded-pill px-4 fw-semibold"
+              [disabled]="!canTransfer"
+              (click)="transferir()">
+              Transferir
+            </button>
+          </div>
+        </mat-card>
+      </mat-tab>
+
+      <mat-tab label="Histórico">
+        <mat-card class="panel-card">
+          <h2>Histórico de transferências</h2>
+          <p class="section-description">Visualize data/hora, valores, status e detalhes das operações.</p>
+          <div class="table-shell">
+            <table mat-table [dataSource]="historico" class="table desktop-table">
+              <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef>Data/hora</th>
+                <td mat-cell *matCellDef="let row">{{ formatDate(row.createdAtIso) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="origem">
+                <th mat-header-cell *matHeaderCellDef>Origem</th>
+                <td mat-cell *matCellDef="let row">{{ row.fromNome }}</td>
+              </ng-container>
+              <ng-container matColumnDef="destino">
+                <th mat-header-cell *matHeaderCellDef>Destino</th>
+                <td mat-cell *matCellDef="let row">{{ row.toNome }}</td>
+              </ng-container>
+              <ng-container matColumnDef="valor">
+                <th mat-header-cell *matHeaderCellDef>Valor</th>
+                <td mat-cell *matCellDef="let row">{{ formatCurrency(row.amount) }}</td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let row">
+                  <span class="status-pill" [class.is-active]="row.status === 'SUCESSO'" [class.is-inactive]="row.status !== 'SUCESSO'">
+                    {{ row.status }}
+                  </span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="detalhe">
+                <th mat-header-cell *matHeaderCellDef>Detalhe</th>
+                <td mat-cell *matCellDef="let row">{{ row.detalhe }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="historicoColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: historicoColumns"></tr>
+            </table>
+          </div>
+          <div class="mobile-list">
+            <article class="mobile-card" *ngFor="let row of historico">
+              <div class="mobile-card-row"><span class="label">Data/hora</span><span class="value">{{ formatDate(row.createdAtIso) }}</span></div>
+              <div class="mobile-card-row"><span class="label">Origem</span><span class="value">{{ row.fromNome }}</span></div>
+              <div class="mobile-card-row"><span class="label">Destino</span><span class="value">{{ row.toNome }}</span></div>
+              <div class="mobile-card-row"><span class="label">Valor</span><span class="value">{{ formatCurrency(row.amount) }}</span></div>
+              <div class="mobile-card-row">
+                <span class="label">Status</span>
+                <span class="status-pill" [class.is-active]="row.status === 'SUCESSO'" [class.is-inactive]="row.status !== 'SUCESSO'">{{ row.status }}</span>
+              </div>
+              <div class="mobile-card-row"><span class="label">Detalhe</span><span class="value">{{ row.detalhe }}</span></div>
+            </article>
+          </div>
+          <p class="empty-state" *ngIf="historico.length === 0">Ainda não há transferências registradas.</p>
+        </mat-card>
+      </mat-tab>
+    </mat-tab-group>
+  </main>
+
+  <footer class="footer">Sistema integrado com foco em segurança, usabilidade e rastreabilidade.</footer>
+</div>
